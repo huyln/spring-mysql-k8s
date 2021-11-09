@@ -1,0 +1,41 @@
+docker run --name jenkins-blueocean --rm --detach \
+  --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
+  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
+  --publish 8090:8080 --publish 50001:50000 \
+  --volume jenkins-data:/var/jenkins_home \
+  --volume jenkins-docker-certs:/certs/client:ro \
+  jenkins/jenkins
+--------------------
+docker run --name jenkins-blueocean --rm --detach \
+  --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
+  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
+  --publish 8090:8080 --publish 50000:50000 \
+  --volume jenkins-data:/var/jenkins_home \
+  --volume jenkins-docker-certs:/certs/client:ro \
+  huyfinn98/jenkins:1
+-------------------
+docker run --name jenkins-docker --rm --detach \
+  --privileged --network jenkins --network-alias docker \
+  --env DOCKER_TLS_CERTDIR=/certs \
+  --volume jenkins-docker-certs:/certs/client \
+  --volume jenkins-data:/var/jenkins_home \
+  --publish 2376:2376 docker:dind --storage-driver overlay2
+------------------
+docker run --name myspring --rm --network employee-mysql -p 9090:8080 myspring
+------------------
+docker run --rm --name mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysqlfinal
+------------------
+
+docker run -d --rm --name=agent1 -p 300:22 \
+--network jenkins -e "DOCKER_HOST=tcp://docker:2376" \
+-e "DOCKER_CERT_PATH=/certs/client" -e "DOCKER_TLS_VERIFY=1" \
+-e "JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDqX65A46tuaXzyNK3QigHa+qLL+O2o23QOt/pOc1gy45Jg21kURPP1zZ7khb7rwqNBCJGeHW2jpL201M5VnBGyejC1WkFjc5dmN/3Bd7MAdxtRmxNX6iJR63ElNpdhdvfepMAXj2rXjfwTTY3xlSOsxqiJqPjI4GiQOzctGnCaQhL74knj83Sxb4lMz2V04oD0buVJpYsrnaJbDlBikIfYBztdNabiFpiynqVD6o98jQnw8U1oVjkeMG3LBnJ7ogZqjhOthpa/IkpEzHyDzFRgThSruPVQeUrA+yxd4a2eq6TiEuskzzwP2U/LHYVUMT5qYaRwv9g7KFfoZ9ixbFwz huyfinn@first-finn" \
+--volume jenkins-data:/var/jenkins_home --volume jenkins-docker-certs:/certs/client:ro \
+--volume  /var/run/docker.sock:/var/run/docker.sock \
+huyfinn98/docker-agent
+-------------------
+
+
+docker push asia-southeast1-docker.pkg.dev/concise-orb-329505/hello-repo/springapp:v1
+
+docker run -it -d --rm --name maven-tool --volume /var/run/docker.sock:/var/run/docker.sock huyfinn98/maven-tool
