@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: spring-config
 data:
-  DB: "postgres"
+  DB: "springsql"
   MYSQL_HOST: "mysql"
   PORT: "3306"
