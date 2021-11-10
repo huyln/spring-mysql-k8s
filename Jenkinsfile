@@ -60,7 +60,7 @@ pipeline{
             steps{
                 script{
                     // kubernetesDeploy(configs: "k8s-deploys/mysql-pv.yaml", kubeconfigId: "mykubeconfig")
-                    sh 'kubectl apply -f spring-config.yaml'
+                    sh 'kubectl apply -f spring-config.yaml -n jenkins'
                 }
             }
         }
