@@ -19,31 +19,41 @@ pipeline{
                 
             }
         }    
-        // stage('Build Project') {
-        //     agent {
-        //         docker {
-        //             image 'huyfinn98/maven-tool'
-        //         }
-        //     }
-        //     steps{
-        //         // build project via maven
-        //         sh 'mvn -version'
-        //         sh "mvn clean install"
-        //     }
-        // }
-        // stage('Build Docker Image') {
-        //     agent {
-        //         docker {
-        //             image 'huyfinn98/maven-tool'
-        //         }
-        //     }
-        //     steps{
-        //         script{
-        //             // build docker image
-        //             docker.build("devopsexample:${env.BUILD_NUMBER}")
-        //         }
-        //     }
-        // }
+        stage('Build Project') {
+            agent {
+                docker {
+                    image 'huyfinn98/maven-tool'
+                }
+            }
+            steps{
+                // build project via maven
+                sh 'mvn -version'
+                sh "mvn clean install"
+            }
+        }
+        stage('Build Docker Image') {
+            agent {
+                docker {
+                    image 'huyfinn98/maven-tool'
+                }
+            }
+            steps{
+                script{
+                    // build docker image
+                    docker.build("myspring:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('Push To GCR'){
+            steps{
+                // login to docker hub and push Image
+//                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+//                     sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                    sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+                    sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+//                 }
+            }
+        }
         stage('Deploy To Kubernetes'){
             agent{
                 label 'kubepod'
@@ -63,16 +73,16 @@ pipeline{
                 }
             }
         }
-        // stage('Push To DockerHub'){
-        //     steps{
-        //         // login to docker hub and push Image
-        //         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-        //             sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-        //             sh "docker tag devopsexample:${env.BUILD_NUMBER} huyfinn98/devopsexample:${env.BUILD_NUMBER}"
-        //             sh "docker push huyfinn98/devopsexample:${env.BUILD_NUMBER}"
-        //         }
-        //     }
-        // }
+        stage('Push To DockerHub'){
+            steps{
+                // login to docker hub and push Image
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                    sh "docker tag devopsexample:${env.BUILD_NUMBER} huyfinn98/devopsexample:${env.BUILD_NUMBER}"
+                    sh "docker push huyfinn98/devopsexample:${env.BUILD_NUMBER}"
+                }
+            }
+        }
         // stage('Pull Image From Dockerhub'){
         //     steps {
         //         // get image from dockerhub
