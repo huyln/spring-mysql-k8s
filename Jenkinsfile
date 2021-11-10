@@ -60,11 +60,9 @@ pipeline{
             steps{
                 script{
                     // kubernetesDeploy(configs: "k8s-deploys/mysql-pv.yaml", kubeconfigId: "mykubeconfig")
-                    
-                    withCredentials([usernamePassword(credentialsId: 'jenkins-kind', usernameVariable: 'my-user', passwordVariable: 'PASSWORD')]) {
-                         sh 'kubectl apply -f spring-config.yaml -n jenkins'
-                    }
-                   
+                    withCredentials([file(credentialsId: 'jenkins-kind', variable: 'FILE')]) {
+                        sh 'kubectl apply -f spring-config.yaml -n jenkins'
+                    }          
                 }
             }
         }
