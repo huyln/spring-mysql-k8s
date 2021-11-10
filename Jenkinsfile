@@ -52,10 +52,10 @@ pipeline{
                 script{
                     // kubernetesDeploy(configs: "k8s-deploys/mysql-pv.yaml", kubeconfigId: "mykubeconfig")
                     withKubeConfig([credentialsId: 'jenkins-kind', serverUrl: 'https://35.186.156.110', namespace: 'jenkins']) {
-                        sh 'kubectl apply -f spring-config.yaml'
-                        sh 'kubectl apply -f k8s-deploys/mysql-pv.yaml'
-                        sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml'
-                        sh 'kubectl apply -f k8s-deploys/spring.yaml'
+                        sh 'kubectl apply -f spring-config.yaml -n jenkins'
+                        sh 'kubectl apply -f k8s-deploys/mysql-pv.yaml -n jenkins'
+                        sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml -n jenkins'
+                        sh 'kubectl apply -f k8s-deploys/spring.yaml -n jenkins'
                     }
 //                     withCredentials([string(credentialsId: 'jenkins-kind', variable: 'FILE')]) {
 //                         sh 'kubectl apply -f spring-config.yaml -n jenkins'
