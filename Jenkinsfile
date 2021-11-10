@@ -45,6 +45,11 @@ pipeline{
             }
         }
         stage('Push To GCR'){
+            agent {
+                docker {
+                    image 'huyfinn98/maven-tool'
+                }
+            }
             steps{
                 script {
                     sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
