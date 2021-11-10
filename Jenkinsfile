@@ -65,6 +65,7 @@ pipeline{
                         sh 'kubectl apply -f spring-config.yaml -n jenkins'
                         sh 'kubectl apply -f k8s-deploys/mysql-pv.yaml -n jenkins'
                         sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml -n jenkins'
+                        sh 'sed -i "s|asia.gcr.io/concise-orb-329505/myspring:v2|asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}|g" k8s-deploys/spring.yaml'
                         sh 'kubectl apply -f k8s-deploys/spring.yaml -n jenkins'
                     }
 //                     withCredentials([string(credentialsId: 'jenkins-kind', variable: 'FILE')]) {
