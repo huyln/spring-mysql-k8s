@@ -46,11 +46,14 @@ pipeline{
         }
         stage('Push To GCR'){
             steps{
+                script {
+                    sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+                    sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+                }
                 // login to docker hub and push Image
 //                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
 //                     sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-                    sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
-                    sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+                    
 //                 }
             }
         }
@@ -67,23 +70,20 @@ pipeline{
                         sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml -n jenkins'
                         sh 'sed -i "s|asia.gcr.io/concise-orb-329505/myspring:v2|asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}|g" k8s-deploys/spring.yaml'
                         sh 'kubectl apply -f k8s-deploys/spring.yaml -n jenkins'
-                    }
-//                     withCredentials([string(credentialsId: 'jenkins-kind', variable: 'FILE')]) {
-//                         sh 'kubectl apply -f spring-config.yaml -n jenkins'
-//                     }          
+                    }       
                 }
             }
         }
-        stage('Push To DockerHub'){
-            steps{
-                // login to docker hub and push Image
-                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                    sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-                    sh "docker tag devopsexample:${env.BUILD_NUMBER} huyfinn98/devopsexample:${env.BUILD_NUMBER}"
-                    sh "docker push huyfinn98/devopsexample:${env.BUILD_NUMBER}"
-                }
-            }
-        }
+//         stage('Push To DockerHub'){
+//             steps{
+//                 // login to docker hub and push Image
+//                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+//                     sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+//                     sh "docker tag devopsexample:${env.BUILD_NUMBER} huyfinn98/devopsexample:${env.BUILD_NUMBER}"
+//                     sh "docker push huyfinn98/devopsexample:${env.BUILD_NUMBER}"
+//                 }
+//             }
+//         }
         // stage('Pull Image From Dockerhub'){
         //     steps {
         //         // get image from dockerhub
