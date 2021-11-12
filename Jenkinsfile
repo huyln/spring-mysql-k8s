@@ -1,10 +1,5 @@
 pipeline{
     agent none
-    // agent {
-    //     docker {
-    //         image 'huyfinn98/maven-tool'
-    //     }
-    // }
     stages {
         stage('Clone Repo') {
             agent {
@@ -31,40 +26,37 @@ pipeline{
                 sh "mvn clean install"
             }
         }
-        stage('Build Docker Image') {
-            agent {
-                docker {
-                    image 'huyfinn98/maven-tool'
-                }
-            }
-            steps{
-                script{
-                    // build docker image
-                    docker.build("myspring:${env.BUILD_NUMBER}")
-                }
-            }
-        }
-        stage('Push To GCR'){
-            agent {
-                docker {
-                    image 'huyfinn98/maven-tool'
-                }
-            }
-            steps{
-                script {
-                    withVault(configuration: [timeout: 60, vaultCredentialId: 'vault-ui', vaultUrl: 'http://34.101.203.241:8200'], 
-                    vaultSecrets: [[engineVersion: 1, path: 'kv/gcloud/auth', secretValues: [[envVar: 'auth', vaultKey: 'config-file']]]]) {
-                        // some block
-                        writeFile file: 'keyfile.json', text: "${auth}"
-                        // sh 'echo $auth > keyfile.json'
-                        // sh 'echo ${config-file} > key.txt'
-                        sh 'gcloud auth activate-service-account 267009820763-compute@developer.gserviceaccount.com --key-file=keyfile.json'
-                    }
-                    sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
-                    sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
-                }
-            }
-        }
+//         stage('Build Docker Image') {
+//             agent {
+//                 docker {
+//                     image 'huyfinn98/maven-tool'
+//                 }
+//             }
+//             steps{
+//                 script{
+//                     // build docker image
+//                     docker.build("myspring:${env.BUILD_NUMBER}")
+//                 }
+//             }
+//         }
+//         stage('Push To GCR'){
+//             agent {
+//                 docker {
+//                     image 'huyfinn98/maven-tool'
+//                 }
+//             }
+//             steps{
+//                 script {
+//                     withVault(configuration: [timeout: 60, vaultCredentialId: 'vault-ui', vaultUrl: 'http://34.101.203.241:8200'], 
+//                     vaultSecrets: [[engineVersion: 1, path: 'kv/gcloud/auth', secretValues: [[envVar: 'auth', vaultKey: 'config-file']]]]) {
+//                         writeFile file: 'keyfile.json', text: "${auth}"
+//                         sh 'gcloud auth activate-service-account 267009820763-compute@developer.gserviceaccount.com --key-file=keyfile.json'
+//                     }
+//                     sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+//                     sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+//                 }
+//             }
+//         }
 //         stage('Deploy To Kubernetes'){
 //             agent{
 //                 label 'kubepod'
