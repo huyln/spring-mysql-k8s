@@ -39,11 +39,9 @@ pipeline{
                 }
             }
         }
-        stage('Push To GCR'){
+        stage('Credential For GCR'){
             agent {
-                docker {
-                    image 'huyfinn98/maven-tool'
-                }
+                label 'kubepod'
             }
             steps{
                 script {
@@ -52,6 +50,24 @@ pipeline{
                         writeFile file: 'keyfile.json', text: "${auth}"
                         sh 'sudo gcloud auth activate-service-account 267009820763-compute@developer.gserviceaccount.com --key-file=keyfile.json'
                     }
+//                     sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+//                     sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
+                }
+            }
+        }
+        stage('Push To GCR'){
+            agent {
+                docker {
+                    image 'huyfinn98/maven-tool'
+                }
+            }
+            steps{
+                script {
+//                     withVault(configuration: [timeout: 60, vaultCredentialId: 'vault-ui', vaultUrl: 'http://34.101.203.241:8200'], 
+//                     vaultSecrets: [[engineVersion: 1, path: 'kv/gcloud/auth', secretValues: [[envVar: 'auth', vaultKey: 'config-file']]]]) {
+//                         writeFile file: 'keyfile.json', text: "${auth}"
+//                         sh 'sudo gcloud auth activate-service-account 267009820763-compute@developer.gserviceaccount.com --key-file=keyfile.json'
+//                     }
                     sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
                     sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
                 }
