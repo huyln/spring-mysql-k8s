@@ -52,33 +52,36 @@ pipeline{
             }
             steps{
                 script {
+                    withVault(configuration: [timeout: 60, vaultCredentialId: 'vault-ui', vaultUrl: 'http://34.101.203.241:8200'], 
+                    vaultSecrets: [[engineVersion: 1, path: 'kv/gcloud/auth', secretValues: [[envVar: 'auth', vaultKey: 'config-file']]]]) {
+                        // some block
+                        writeFile file: 'keyfile.json', text: "${auth}"
+                        // sh 'echo $auth > keyfile.json'
+                        // sh 'echo ${config-file} > key.txt'
+                        sh 'gcloud auth activate-service-account 267009820763-compute@developer.gserviceaccount.com --key-file=keyfile.json'
+                    }
                     sh "docker tag myspring:${env.BUILD_NUMBER} asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
                     sh "docker push asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}"
                 }
-                // login to docker hub and push Image
-//                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'jenkins-dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-//                     sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-                    
+            }
+        }
+//         stage('Deploy To Kubernetes'){
+//             agent{
+//                 label 'kubepod'
+//             }
+//             steps{
+//                 script{
+//                     // kubernetesDeploy(configs: "k8s-deploys/mysql-pv.yaml", kubeconfigId: "mykubeconfig")
+//                     withKubeConfig([credentialsId: 'jenkins-kind', serverUrl: 'https://35.186.156.110', namespace: 'jenkins']) {
+//                         sh 'kubectl apply -f spring-config.yaml -n jenkins'
+//                         sh 'kubectl apply -f k8s-deploys/mysql-pv.yaml -n jenkins'
+//                         sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml -n jenkins'
+//                         sh 'sed -i "s|asia.gcr.io/concise-orb-329505/myspring:v2|asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}|g" k8s-deploys/spring.yaml'
+//                         sh 'kubectl apply -f k8s-deploys/spring.yaml -n jenkins'
+//                     }       
 //                 }
-            }
-        }
-        stage('Deploy To Kubernetes'){
-            agent{
-                label 'kubepod'
-            }
-            steps{
-                script{
-                    // kubernetesDeploy(configs: "k8s-deploys/mysql-pv.yaml", kubeconfigId: "mykubeconfig")
-                    withKubeConfig([credentialsId: 'jenkins-kind', serverUrl: 'https://35.186.156.110', namespace: 'jenkins']) {
-                        sh 'kubectl apply -f spring-config.yaml -n jenkins'
-                        sh 'kubectl apply -f k8s-deploys/mysql-pv.yaml -n jenkins'
-                        sh 'kubectl apply -f k8s-deploys/mysql-deployment.yaml -n jenkins'
-                        sh 'sed -i "s|asia.gcr.io/concise-orb-329505/myspring:v2|asia.gcr.io/concise-orb-329505/myspring:${env.BUILD_NUMBER}|g" k8s-deploys/spring.yaml'
-                        sh 'kubectl apply -f k8s-deploys/spring.yaml -n jenkins'
-                    }       
-                }
-            }
-        }
+//             }
+//         }
 //         stage('Push To DockerHub'){
 //             steps{
 //                 // login to docker hub and push Image
