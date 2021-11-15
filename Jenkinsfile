@@ -2,12 +2,13 @@ pipeline{
     agent none
     stages {
         stage('Clone Repo') {
-            agent {
-//                 docker {
-//                     image 'huyfinn98/maven-tool'
-//                 }
-                label 'kubepod'
-            }
+//             agent {
+// //                 docker {
+// //                     image 'huyfinn98/maven-tool'
+// //                 }
+//                 label 'kubepod'
+//             }
+            agent none
             steps {
                 // Get some code from a GitHub repository
 //                 git 'https://github.com/huynq22/devopsJenkinDemo.git'
