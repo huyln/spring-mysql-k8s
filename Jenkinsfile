@@ -11,6 +11,7 @@ pipeline{
             steps {
                 // Get some code from a GitHub repository
 //                 git 'https://github.com/huynq22/devopsJenkinDemo.git'
+                sh 'git --version'
                 git 'https://github.com/huynq22/spring-mysql-k8s.git'
                 
             }
