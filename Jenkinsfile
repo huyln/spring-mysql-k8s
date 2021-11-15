@@ -2,26 +2,36 @@ pipeline{
     agent none
     stages {
         stage('Clone Repo') {
-//             agent {
-// //                 docker {
-// //                     image 'huyfinn98/maven-tool'
-// //                 }
-//                 label 'kubepod'
-//             }
+            agent {
+                label 'kubepod'
+            }
             steps {
                 // Get some code from a GitHub repository
 //                 git 'https://github.com/huynq22/devopsJenkinDemo.git'
                 sh 'git --version'
-                git 'https://github.com/huynq22/spring-mysql-k8s.git'
-                
+                git 'https://github.com/huynq22/spring-mysql-k8s.git'               
             }
         }    
         stage('Build Project') {
+//             agent {
+//                 docker {
+//                     image 'huyfinn98/maven-tool'
+//                 }
+//             }
             agent {
-                docker {
-                    image 'huyfinn98/maven-tool'
+                kubernetes {
+                  yaml '''
+                    apiVersion: v1
+                    kind: Pod
+                    spec:
+                      containers:
+                      - name: maven
+                        image: maven:alpine
+                        command:
+                        - cat
+                        tty: true
+                    '''
                 }
-            }
             steps{
                 // build project via maven
                 sh 'mvn -version'
