@@ -32,6 +32,7 @@ pipeline{
                         tty: true
                     '''
                 }
+            }
             steps{
                 // build project via maven
                 sh 'mvn -version'
