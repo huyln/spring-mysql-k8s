@@ -3,9 +3,10 @@ pipeline{
     stages {
         stage('Clone Repo') {
             agent {
-                docker {
-                    image 'huyfinn98/maven-tool'
-                }
+//                 docker {
+//                     image 'huyfinn98/maven-tool'
+//                 }
+                label 'kubepod'
             }
             steps {
                 // Get some code from a GitHub repository
