@@ -8,7 +8,6 @@ pipeline{
 // //                 }
 //                 label 'kubepod'
 //             }
-            agent none
             steps {
                 // Get some code from a GitHub repository
 //                 git 'https://github.com/huynq22/devopsJenkinDemo.git'
