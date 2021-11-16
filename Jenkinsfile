@@ -9,7 +9,7 @@ pipeline{
                 // Get some code from a GitHub repository
 //                 git 'https://github.com/huynq22/devopsJenkinDemo.git'
                 sh 'git --version'
-                sh 'ls'               
+                git branch: 'patch-1', url: 'https://github.com/huyln/spring-mysql-k8s.git'             
             }
         }    
         stage('Build Project') {
